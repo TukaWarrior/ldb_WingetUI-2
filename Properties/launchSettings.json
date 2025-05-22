@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WingetUI2 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "WingetUI2 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
