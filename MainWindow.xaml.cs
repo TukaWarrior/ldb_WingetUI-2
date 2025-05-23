@@ -1,31 +1,113 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System;
+using System.Text;
+using WingetUI2.Domain;
 
 namespace WingetUI2
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
+        private readonly IWingetService _wingetService;
+
         public MainWindow()
         {
             InitializeComponent();
+            _wingetService = new WingetService();
+        }
+
+        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OutputBox.Text = "Searching...";
+                var packages = await _wingetService.SearchPackagesAsync(SearchBox.Text);
+                
+                var sb = new StringBuilder();
+                sb.AppendLine($"Found {packages.Count} packages:");
+                foreach (var package in packages)
+                {
+                    sb.AppendLine($"- {package.Name} ({package.Id})");
+                    sb.AppendLine($"  Version: {package.Version}");
+                    sb.AppendLine($"  Publisher: {package.Publisher}");
+                    sb.AppendLine();
+                }
+                
+                OutputBox.Text = sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                OutputBox.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        private async void GetInstalledButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OutputBox.Text = "Getting installed packages...";
+                var packages = await _wingetService.GetInstalledPackagesAsync();
+                
+                var sb = new StringBuilder();
+                sb.AppendLine($"Found {packages.Count} installed packages:");
+                foreach (var package in packages)
+                {
+                    sb.AppendLine($"- {package.Name} ({package.Id})");
+                    sb.AppendLine($"  Version: {package.Version}");
+                    sb.AppendLine();
+                }
+                
+                OutputBox.Text = sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                OutputBox.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        private async void InstallButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var packageId = SearchBox.Text;
+                OutputBox.Text = $"Installing {packageId}...";
+                await _wingetService.InstallPackageAsync(packageId);
+                OutputBox.Text += "\nInstallation completed!";
+            }
+            catch (Exception ex)
+            {
+                OutputBox.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        private async void UninstallButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var packageId = SearchBox.Text;
+                OutputBox.Text = $"Uninstalling {packageId}...";
+                await _wingetService.UninstallPackageAsync(packageId);
+                OutputBox.Text += "\nUninstallation completed!";
+            }
+            catch (Exception ex)
+            {
+                OutputBox.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        private async void UpgradeButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var packageId = SearchBox.Text;
+                OutputBox.Text = $"Upgrading {packageId}...";
+                await _wingetService.UpgradePackageAsync(packageId);
+                OutputBox.Text += "\nUpgrade completed!";
+            }
+            catch (Exception ex)
+            {
+                OutputBox.Text = $"Error: {ex.Message}";
+            }
         }
     }
 }

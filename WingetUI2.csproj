@@ -38,6 +38,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250513003" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.5.0" />
+    <PackageReference Include="Microsoft.WinGet.Client" Version="1.10.340" />
+    <PackageReference Include="System.Management.Automation" Version="7.3.10" />
   </ItemGroup>
 
   <!--
@@ -55,5 +58,12 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+  </PropertyGroup>
+
+  <!-- Add this new PropertyGroup for package sources -->
+  <PropertyGroup>
+    <RestoreAdditionalProjectSources>
+      https://pkgs.dev.azure.com/ms/WindowsAppSDK/_packaging/WindowsAppSDK-DevServices/nuget/v3/index.json
+    </RestoreAdditionalProjectSources>
   </PropertyGroup>
 </Project>
